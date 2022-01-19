@@ -54,22 +54,17 @@ function createCirclePoints(cent, rad, k) {
     a = k * dAngle;
     var p = vec2(rad * Math.sin(a) + cent[0], rad * Math.cos(a) + cent[1]);
     points.push(p);
-    var counter = 3;
+    var counter = 2;
     for (i = (k-1); i >= 0; i--) {
+        counter++;
         if (counter % 3 == 0) {
             a = i * dAngle;
             p = vec2(rad * Math.sin(a) + cent[0], rad * Math.cos(a) + cent[1]);
             points.push(p);
-            console.log('thrir');
         }
-        else if ((counter - 1)%3 == 0) {
-             points.push(center);
-             console.log('tveir');
-        }
+        else if ((counter - 1)%3 == 0) points.push(center);
         else points.push(p);
-        counter++;
     }
-    console.log(points);
 }
 
 function render() {
