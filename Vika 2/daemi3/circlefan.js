@@ -13,8 +13,6 @@ var numCirclePoints = 4;
 var radius = 0.4;
 var center = vec2(0, 0);
 var points = [];
-var vBuffer;
-
 
 function init() {
     
@@ -31,7 +29,7 @@ function init() {
     var program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    vBuffer = gl.createBuffer();
+    var vBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, 1000000, gl.STATIC_DRAW);
 
@@ -41,7 +39,7 @@ function init() {
 
     document.getElementById("slider").onchange = function(event) {
         numCirclePoints = event.target.value;
-        render();   
+        render(); 
     }
     render();
 };
@@ -59,16 +57,15 @@ function createCirclePoints(cent, rad, k) {
 window.onload = init;
 
 function render() {
-    points = [];
     // Create circle
     points.push(center);
     createCirclePoints(center, radius, numCirclePoints);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(points));
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    // Draw circle using Triangle Fan
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, numCirclePoints + 2);
-    points=[];
+    console.log(points.length);
     console.log(numCirclePoints);
-    //window.requestAnimFrame(render);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(points));
+    gl.clear( gl.COLOR_BUFFER_BIT );
+    // Draw circle using Triangle Fan
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, points.length);
+    points = [];
+    window.requestAnimFrame(render);
 }
