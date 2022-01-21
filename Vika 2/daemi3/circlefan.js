@@ -60,8 +60,6 @@ function render() {
     // Create circle
     points.push(center);
     createCirclePoints(center, radius, numCirclePoints);
-    console.log(points.length);
-    console.log(numCirclePoints);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(points));
     gl.clear( gl.COLOR_BUFFER_BIT );
     // Draw circle using Triangle Fan
