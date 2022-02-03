@@ -9,8 +9,6 @@ attribute vec4 vPosition;
 void
 main()
 {
-    // Stækkum punktana svo þeir sjáist!
-    gl_PointSize = 5.0;
     gl_Position = vPosition;
 }
 </script>
@@ -19,22 +17,20 @@ main()
 
 precision mediump float;
 
-varying vec4 fColor;
 void
 main()
 {
-    // Teiknar gula punkta
-    gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 );
+    gl_FragColor = vec4( 0.0, 0.0, 1.0, 1.0 );
 }
 </script>
 
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
-<script type="text/javascript" src="triangles.js"></script>
+<script type="text/javascript" src="marius.js"></script>
 
 <body>
-<canvas id="gl-canvas" width="512" height="512">
-</canvas>
+    <canvas id="gl-canvas" width="1000" height="600"></canvas>
 </body>
+
 </html>
