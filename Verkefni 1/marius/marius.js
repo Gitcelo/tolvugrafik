@@ -1,6 +1,9 @@
 var canvas;
 var gl;
 let right = true;
+let jump = 0;
+let xmove, ymove;
+var vertices;
 
 
 window.onload = function init() {
@@ -19,7 +22,7 @@ window.onload = function init() {
     var program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    var vertices = [
+    vertices = [
         vec2(-0.8, -1),
         vec2(-0.8, -0.7),
         vec2(-0.65, -0.9)
@@ -39,28 +42,34 @@ window.onload = function init() {
     window.addEventListener("keydown", function (e) {
         switch (e.keyCode) {
             case 37:	// vinstri �r
+                if(jump) break;
                 if (right) {
                     right = false;
                     vertices[2][0] -= 0.3;
                     xmove = 0;
                 }
-                else if(vertices[0][0]<=-1) {
+                else if(vertices[0][0]<=-0.95) {
                     for (i = 0; i<3; i++) vertices[i][0] = (1-0.15*Math.floor(i/2));
                     xmove = 0;
                 }
                 else xmove = -0.04;
                 break;
             case 39:	// h�gri �r
+                if(jump) break;
                 if (!right) {
                     right = true;
                     vertices[2][0] += 0.3;
                     xmove = 0.0;
                 }
-                else if(vertices[0][0] >= 1) {
+                else if(vertices[0][0] >= 0.95) {
                     for (i = 0; i < 3; i++) vertices[i][0] = (-1+0.15*Math.floor(i/2))
                     xmove = 0;
                 }
                 else xmove = 0.04;
+                break;
+            case 32:
+                if(jump) break;
+                jump = 4;
                 break;
             default:
                 xmove = 0.0;
@@ -77,7 +86,12 @@ window.onload = function init() {
 
 
 function render() {
-
+    if(jump > 0) {
+        if(jump >2) ymove = 0.1;
+        else ymove = -0.1;
+        for(i = 0; i < 3; i++) vertices[i][1] += ymove;
+        jump--;
+    }
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 3);
 
