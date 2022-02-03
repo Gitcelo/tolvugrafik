@@ -39,7 +39,7 @@ window.onload = function init() {
     gl.enableVertexAttribArray(vPosition);
     
     // Me�h�ndlun � m�sarsmellum
-    canvas.addEventListener("mousedown", function(e){
+    canvas.addEventListener("click", function(e){
 
         gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
         
@@ -55,12 +55,15 @@ window.onload = function init() {
         index+=3;
     } );
 
+    canvas.addEventListener("contextmenu", function() {
+        index = 0;
+    });
+
     render();
 }
 
 
 function render() {
-    
     gl.clear( gl.COLOR_BUFFER_BIT );
     gl.drawArrays( gl.TRIANGLES, 0, index );
 
