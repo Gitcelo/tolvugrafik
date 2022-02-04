@@ -3,8 +3,16 @@ var gl;
 let right = true;
 let jump = 0;
 let xmove, ymove;
+let height = 20;
 var vertices;
+let colorLoc;
 
+function coin() {
+    vertices.push(vec2(-0.1, 0.1));
+    vertices.push(vec2(-0.1, -0.1));
+    vertices.push(vec2(0, -0.1));
+    vertices.push(vec2(0, 0.1));
+}
 
 window.onload = function init() {
 
@@ -27,6 +35,7 @@ window.onload = function init() {
         vec2(-0.8, -0.7),
         vec2(-0.65, -0.9)
     ];
+    coin();
     xmove = 0;
     ymove = 0;
     // Load the data into the GPU
@@ -38,6 +47,8 @@ window.onload = function init() {
     var vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
+
+    colorLoc = gl.getUniformLocation(program, "fColor");
 
     // Event listener for keyboard
     window.addEventListener("keydown", function (e) {
@@ -68,7 +79,7 @@ window.onload = function init() {
                 break;
             case 32:
                 if (jump) break;
-                jump = 20;
+                jump = height;
                 if (right && xmove != 0) xmove = 0.01;
                 else if (xmove != 0) xmove = -0.01;
                 break;
@@ -89,8 +100,9 @@ window.onload = function init() {
 
 function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
+
     if (jump > 0) {
-        if (jump > 10) ymove = 0.1;
+        if (jump > height/2) ymove = 0.1;
         else ymove = -0.1;
         if(xmove!=0 && jump%2==1) {
             if(right) xmove = 0.05;
@@ -103,8 +115,12 @@ function render() {
         }
         jump--;
     }
+
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(vertices));
+    gl.uniform4fv(colorLoc, vec4( 0.0, 0.0, 1.0, 1.0 ));
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.uniform4fv(colorLoc, vec4( 1.0, 1.0, 0.0, 1.0 ));
+    gl.drawArrays(gl.TRIANGLE_FAN, 3, 4);
 
     window.requestAnimFrame(render);
 }
