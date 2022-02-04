@@ -27,7 +27,8 @@ window.onload = function init() {
         vec2(-0.8, -0.7),
         vec2(-0.65, -0.9)
     ];
-
+    xmove = 0;
+    ymove = 0;
     // Load the data into the GPU
     var bufferId = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
@@ -42,41 +43,42 @@ window.onload = function init() {
     window.addEventListener("keydown", function (e) {
         switch (e.keyCode) {
             case 37:	// vinstri �r
-                if(jump) break;
+                if (jump) break;
                 if (right) {
                     right = false;
                     vertices[2][0] -= 0.3;
                     xmove = 0;
                 }
-                else if(vertices[0][0]<=-0.95) {
-                    for (i = 0; i<3; i++) vertices[i][0] = (1-0.15*Math.floor(i/2));
-                    xmove = 0;
+                else if (vertices[0][0] <= -0.95) {
+                    for (i = 0; i < 3; i++) vertices[i][0] = (1 - 0.15 * Math.floor(i / 2));
                 }
                 else xmove = -0.04;
                 break;
             case 39:	// h�gri �r
-                if(jump) break;
+                if (jump) break;
                 if (!right) {
                     right = true;
                     vertices[2][0] += 0.3;
                     xmove = 0.0;
                 }
-                else if(vertices[0][0] >= 0.95) {
-                    for (i = 0; i < 3; i++) vertices[i][0] = (-1+0.15*Math.floor(i/2))
-                    xmove = 0;
+                else if (vertices[0][0] >= 0.95) {
+                    for (i = 0; i < 3; i++) vertices[i][0] = (-1 + 0.15 * Math.floor(i / 2));
                 }
                 else xmove = 0.04;
                 break;
             case 32:
-                if(jump) break;
-                jump = 4;
+                if (jump) break;
+                jump = 20;
+                if (right && xmove != 0) xmove = 0.01;
+                else if (xmove != 0) xmove = -0.01;
                 break;
             default:
                 xmove = 0.0;
         }
-        for (i = 0; i < 3; i++) {
-            vertices[i][0] += xmove;
-        }
+        if (jump == 0)
+            for (i = 0; i < 3; i++) {
+                vertices[i][0] += xmove;
+            }
 
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(vertices));
     });
@@ -86,14 +88,23 @@ window.onload = function init() {
 
 
 function render() {
-    if(jump > 0) {
-        if(jump >2) ymove = 0.1;
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    if (jump > 0) {
+        if (jump > 10) ymove = 0.1;
         else ymove = -0.1;
-        for(i = 0; i < 3; i++) vertices[i][1] += ymove;
+        if(xmove!=0 && jump%2==1) {
+            if(right) xmove = 0.05;
+            else xmove = -0.05;
+        }
+        else if(xmove!=0) xmove = 0.01;
+        for (i = 0; i < 3; i++) {
+            vertices[i][1] += ymove;
+            vertices[i][0] += xmove;
+        }
         jump--;
     }
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, 3);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(vertices));
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     window.requestAnimFrame(render);
 }
