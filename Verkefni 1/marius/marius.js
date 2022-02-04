@@ -8,10 +8,20 @@ var vertices;
 let colorLoc;
 
 function coin() {
-    vertices.push(vec2(-0.1, 0.1));
-    vertices.push(vec2(-0.1, -0.1));
-    vertices.push(vec2(0, -0.1));
-    vertices.push(vec2(0, 0.1));
+
+    vertices.push(vec2(-0.05, 0.05));
+    vertices.push(vec2(-0.05, -0.05));
+    vertices.push(vec2(0, -0.05));
+    vertices.push(vec2(0, 0.05));
+}
+
+function collision(offset) {
+    const mX = vertices[0][0];
+    const mY = vertices[0][1];
+    const cX = vertices[offset][0];
+    const cY = vertices[offset][1];
+    if(mX <= cX && mX+0.15 >= cX+0.05 && mY <= cY-0.1 && mY+0.3 >= cY)
+        for (i = 0; i < 4; i++) vertices[offset+i] = 0;
 }
 
 window.onload = function init() {
@@ -32,8 +42,10 @@ window.onload = function init() {
 
     vertices = [
         vec2(-0.8, -1),
-        vec2(-0.8, -0.7),
-        vec2(-0.65, -0.9)
+        vec2(-0.8, -0.9),
+        vec2(-0.65, -0.9),
+        vec2(-0.8, -0.7)
+        
     ];
     coin();
     xmove = 0;
@@ -87,7 +99,7 @@ window.onload = function init() {
                 xmove = 0.0;
         }
         if (jump == 0)
-            for (i = 0; i < 3; i++) {
+            for (i = 0; i < 4; i++) {
                 vertices[i][0] += xmove;
             }
 
@@ -109,18 +121,26 @@ function render() {
             else xmove = -0.05;
         }
         else if(xmove!=0) xmove = 0.01;
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < 4; i++) {
             vertices[i][1] += ymove;
             vertices[i][0] += xmove;
         }
         jump--;
     }
-
+    collision(4);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(vertices));
+
+    // Teikna buxurnar á Marius
     gl.uniform4fv(colorLoc, vec4( 0.0, 0.0, 1.0, 1.0 ));
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // Teikna búkinn á Marius (so no head?)
+    gl.uniform4fv(colorLoc, vec4( 1.0, 0.0, 0.0, 1.0 ));
+    gl.drawArrays(gl.TRIANGLES, 1, 3);
+
+    // Teikna einn gullmola
     gl.uniform4fv(colorLoc, vec4( 1.0, 1.0, 0.0, 1.0 ));
-    gl.drawArrays(gl.TRIANGLE_FAN, 3, 4);
+    gl.drawArrays(gl.TRIANGLE_FAN, 4, 4);
 
     window.requestAnimFrame(render);
 }
