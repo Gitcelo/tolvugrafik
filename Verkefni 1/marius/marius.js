@@ -1,25 +1,22 @@
 var canvas;
 var gl;
 let right = true;
-let jump = 0;
-let xmove, ymove;
 let height = 20;
 var vertices;
-let colorLoc;
-let coinTimer, nextCoin, score = 0;
-let canvasScore;
+let xmove, ymove, colorLoc, canvasScore;
+let nextCoin = [];
+let coinTimer, score = 0, jump = 0;
 
-function coin() {
-    nextCoin = Math.random()*400 + 100;
-    console.log(nextCoin);
+function coin(coin) {
+    nextCoin[coin-1] = Math.random()*400 + 100;
     let cX = Math.random()*1.95 - 1;
     let cY;
     if(Math.random()>0.5) cY = -0.05;
     else cY = -1;
-    vertices[4] = vec2(cX, cY+0.1);
-    vertices[5] = vec2(cX, cY);
-    vertices[6] = vec2(cX+0.05, cY);
-    vertices[7] = vec2(cX+0.05, cY+0.1);
+    vertices[4*coin] = vec2(cX, cY+0.1);
+    vertices[4*coin+1] = vec2(cX, cY);
+    vertices[4*coin+2] = vec2(cX+0.05, cY);
+    vertices[4*coin+3] = vec2(cX+0.05, cY+0.1);
 }
 
 function collision(offset) {
@@ -45,7 +42,6 @@ function collision(offset) {
 }
 
 window.onload = function init() {
-
     canvas = document.getElementById("gl-canvas");
     canvasScore = document.getElementById("score");
     canvasScore.innerHTML = score;
@@ -70,7 +66,8 @@ window.onload = function init() {
         
     ];
 
-    coin();
+    coin(1);
+    coin(2);
     xmove = 0;
     ymove = 0;
     // Load the data into the GPU
@@ -156,8 +153,10 @@ function render() {
         }
         jump--;
     }
-    if(nextCoin <= 0) coin();
-    else nextCoin--;
+    for(i = 0; i < 2; i++) {
+    if(nextCoin[i] <= 0) coin(i+1);
+    else nextCoin[i]--;
+    }
     collision(4);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(vertices));
 
@@ -172,6 +171,8 @@ function render() {
     // Teikna einn gullmola
     gl.uniform4fv(colorLoc, vec4( 1.0, 1.0, 0.0, 1.0 ));
     gl.drawArrays(gl.TRIANGLE_FAN, 4, 4);
+    gl.uniform4fv(colorLoc, vec4( 1.0, 1.0, 0.0, 1.0 ));
+    gl.drawArrays(gl.TRIANGLE_FAN, 8, 4);
 
     window.requestAnimFrame(render);
 }
