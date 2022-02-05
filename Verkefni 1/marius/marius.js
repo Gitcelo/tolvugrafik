@@ -1,12 +1,13 @@
 var canvas;
 var gl;
-let right = true;
-let height = 20;
 var vertices;
+let right = true, score = 0, jump = 0, height = 20, nextCoin = [], scores = [], nextEnemy = 0;
 let xmove, ymove, colorLoc, canvasScore;
-let nextCoin = [];
-let coinTimer, score = 0, jump = 0;
 
+/**
+ * Bætir hnitum fyrir gullmola inn í vertices.
+ * @param {*} coin 
+ */
 function coin(coin) {
     nextCoin[coin-1] = Math.random()*200 + 100;
     let cX = Math.random()*1.95 - 1;
@@ -19,6 +20,10 @@ function coin(coin) {
     vertices[4*coin+3] = vec2(cX+0.05, cY+0.1);
 }
 
+/**
+ * Athugar hvort Marius hafi rekist á annan gullmolann.
+ * @param {*} offset Gefur til kynna hvar í vertices fyrsta hnit molans er
+ */
 function collision(offset) {
     const mY = vertices[0][1];
     const cX = vertices[offset][0];
@@ -39,6 +44,18 @@ function collision(offset) {
         canvasScore.innerHTML = score;
         }
     }
+}
+
+/**
+ *  Á að setja stigastrik inn - virkar ekki eins og er
+ */
+function addScore() {
+    const offset = 12;
+    vertices[offset] = vec2(-0.9, 0.9);
+    vertices[offset+1] = vec2(-0.9, 0.8);
+    vertices[offset+2] = vec2(-0.85, 0.8);
+    vertices[offset+3] = vec2(-0.85, 0.9);
+    score++;
 }
 
 window.onload = function init() {
@@ -169,11 +186,11 @@ function render() {
     gl.uniform4fv(colorLoc, vec4( 1.0, 0.0, 0.0, 1.0 ));
     gl.drawArrays(gl.TRIANGLES, 1, 3);
 
-    // Teikna einn gullmola
+    // Teikna gullmolana
     gl.uniform4fv(colorLoc, vec4( 1.0, 1.0, 0.0, 1.0 ));
     gl.drawArrays(gl.TRIANGLE_FAN, 4, 4);
-    gl.uniform4fv(colorLoc, vec4( 1.0, 1.0, 0.0, 1.0 ));
     gl.drawArrays(gl.TRIANGLE_FAN, 8, 4);
+    //gl.drawArrays(gl.TRIANGLE_FAN, 12, 4);
 
     window.requestAnimFrame(render);
 }
