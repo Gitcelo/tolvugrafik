@@ -83,7 +83,10 @@ window.onload = function init() {
                     xmove = 0;
                 }
                 else if (vertices[0][0] <= -0.95) {
-                    for (i = 0; i < 3; i++) vertices[i][0] = (1 - 0.15 * Math.floor(i / 2));
+                    for (i = 0; i < 4; i++) {
+                     if(i == 2) vertices[i][0] = 0.85;
+                     else vertices[i][0] = 1;
+                    }
                 }
                 else xmove = -0.04;
                 break;
@@ -95,7 +98,10 @@ window.onload = function init() {
                     xmove = 0.0;
                 }
                 else if (vertices[0][0] >= 0.95) {
-                    for (i = 0; i < 3; i++) vertices[i][0] = (-1 + 0.15 * Math.floor(i / 2));
+                    for (i = 0; i < 4; i++) {
+                        if(i == 2) vertices[i][0] = -0.85;
+                        else vertices[i][0] = -1;
+                    }
                 }
                 else xmove = 0.04;
                 break;
