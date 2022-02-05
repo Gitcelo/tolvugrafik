@@ -6,16 +6,20 @@ let xmove, ymove;
 let height = 20;
 var vertices;
 let colorLoc;
+let coinTimer, nextCoin, score = 0;
+let canvasScore;
 
 function coin() {
+    nextCoin = Math.random()*400 + 100;
+    console.log(nextCoin);
     let cX = Math.random()*1.95 - 1;
     let cY;
     if(Math.random()>0.5) cY = -0.05;
     else cY = -1;
-    vertices.push(vec2(cX, cY+0.1));
-    vertices.push(vec2(cX, cY));
-    vertices.push(vec2(cX+0.05, cY));
-    vertices.push(vec2(cX+0.05, cY+0.1));
+    vertices[4] = vec2(cX, cY+0.1);
+    vertices[5] = vec2(cX, cY);
+    vertices[6] = vec2(cX+0.05, cY);
+    vertices[7] = vec2(cX+0.05, cY+0.1);
 }
 
 function collision(offset) {
@@ -24,19 +28,27 @@ function collision(offset) {
     const cY = vertices[offset][1];
     if (right) {
     const mX = vertices[0][0];
-    if(mX <= cX+0.05 && mX+0.15 >= cX && mY <= cY-0.1 && mY+0.3 >= cY)
+    if(mX <= cX+0.05 && mX+0.15 >= cX && mY <= cY-0.1 && mY+0.3 >= cY) {
         for (i = 0; i < 4; i++) vertices[offset+i] = 0;
+        score++;
+        canvasScore.innerHTML = score;
+    }
     }
     else {
         const mX = vertices[2][0];
-        if(mX <= cX+0.05 && mX+0.15 >= cX && mY <= cY-0.1 && mY+0.3 >= cY)
+        if(mX <= cX+0.05 && mX+0.15 >= cX && mY <= cY-0.1 && mY+0.3 >= cY) {
         for (i = 0; i < 4; i++) vertices[offset+i] = 0;
+        score++;
+        canvasScore.innerHTML = score;
+        }
     }
 }
 
 window.onload = function init() {
 
     canvas = document.getElementById("gl-canvas");
+    canvasScore = document.getElementById("score");
+    canvasScore.innerHTML = score;
 
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) { alert("WebGL isn't available"); }
@@ -57,6 +69,7 @@ window.onload = function init() {
         vec2(-0.8, -0.7)
         
     ];
+
     coin();
     xmove = 0;
     ymove = 0;
@@ -143,6 +156,8 @@ function render() {
         }
         jump--;
     }
+    if(nextCoin <= 0) coin();
+    else nextCoin--;
     collision(4);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(vertices));
 
