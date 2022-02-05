@@ -8,7 +8,7 @@ let nextCoin = [];
 let coinTimer, score = 0, jump = 0;
 
 function coin(coin) {
-    nextCoin[coin-1] = Math.random()*400 + 100;
+    nextCoin[coin-1] = Math.random()*200 + 100;
     let cX = Math.random()*1.95 - 1;
     let cY;
     if(Math.random()>0.5) cY = -0.05;
@@ -158,6 +158,7 @@ function render() {
     else nextCoin[i]--;
     }
     collision(4);
+    collision(8);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(vertices));
 
     // Teikna buxurnar á Marius
