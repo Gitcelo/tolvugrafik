@@ -8,7 +8,6 @@ var vertices;
 let colorLoc;
 
 function coin() {
-
     vertices.push(vec2(-0.05, 0.05));
     vertices.push(vec2(-0.05, -0.05));
     vertices.push(vec2(0, -0.05));
@@ -16,12 +15,19 @@ function coin() {
 }
 
 function collision(offset) {
-    const mX = vertices[0][0];
     const mY = vertices[0][1];
     const cX = vertices[offset][0];
     const cY = vertices[offset][1];
-    if(mX <= cX && mX+0.15 >= cX+0.05 && mY <= cY-0.1 && mY+0.3 >= cY)
+    if (right) {
+    const mX = vertices[0][0];
+    if(mX < cX+0.05 && mX+0.15 > cX && mY < cY-0.1 && mY+0.3 > cY)
         for (i = 0; i < 4; i++) vertices[offset+i] = 0;
+    }
+    else {
+        const mX = vertices[2][0];
+        if(mX < cX+0.05 && mX+0.15 > cX && mY < cY-0.1 && mY+0.3 > cY)
+        for (i = 0; i < 4; i++) vertices[offset+i] = 0;
+    }
 }
 
 window.onload = function init() {
