@@ -4,6 +4,9 @@ var vertices;
 let right = true, score = 0, jump = 0, height = 20, nextCoin = [], scores = [], monsterTimer = 0;
 let xmove, ymove, colorLoc;
 
+/**
+ * Býr til Marius okkar.
+ */
 function makeMarius() {
     vertices = [
         vec2(-0.8, -1),
