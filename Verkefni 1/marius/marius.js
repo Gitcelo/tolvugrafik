@@ -4,20 +4,29 @@ var vertices;
 let right = true, score = 0, jump = 0, height = 20, nextCoin = [], scores = [], monsterTimer = 0;
 let xmove, ymove, colorLoc;
 
+function makeMarius() {
+    vertices = [
+        vec2(-0.8, -1),
+        vec2(-0.8, -0.9),
+        vec2(-0.65, -0.9),
+        vec2(-0.8, -0.7)
+    ];
+}
+
 /**
  * Bætir hnitum fyrir gullmola inn í vertices.
  * @param {*} offset gefur til kynna hvar í fylkinu molinn kemur fyrir
  */
 function coin(offset) {
-    nextCoin[offset-1] = Math.random()*200 + 100;
-    let cX = Math.random()*1.95 - 1;
+    nextCoin[offset - 1] = Math.random() * 200 + 100;
+    let cX = Math.random() * 1.95 - 1;
     let cY;
-    if(Math.random()>0.5) cY = -0.05;
+    if (Math.random() > 0.5) cY = -0.05;
     else cY = -1;
-    vertices[4*offset] = vec2(cX, cY+0.1);
-    vertices[4*offset+1] = vec2(cX, cY);
-    vertices[4*offset+2] = vec2(cX+0.05, cY);
-    vertices[4*offset+3] = vec2(cX+0.05, cY+0.1);
+    vertices[4 * offset] = vec2(cX, cY + 0.1);
+    vertices[4 * offset + 1] = vec2(cX, cY);
+    vertices[4 * offset + 2] = vec2(cX + 0.05, cY);
+    vertices[4 * offset + 3] = vec2(cX + 0.05, cY + 0.1);
 }
 
 /**
@@ -29,54 +38,36 @@ function collision(offset) {
     const cX = vertices[offset][0];
     const cY = vertices[offset][1];
     if (right) {
-    const mX = vertices[0][0];
-    if(mX <= cX+0.05 && mX+0.15 >= cX && mY <= cY-0.1 && mY+0.3 >= cY) {
-        for (i = 0; i < 4; i++) vertices[offset+i] = vec2(0,0);
-        addScore();
-    }
+        const mX = vertices[0][0];
+        if (mX <= cX + 0.05 && mX + 0.15 >= cX && mY <= cY - 0.1 && mY + 0.3 >= cY) {
+            for (i = 0; i < 4; i++) vertices[offset + i] = vec2(0, 0);
+            addScore();
+        }
     }
     else {
         const mX = vertices[2][0];
-        if(mX <= cX+0.05 && mX+0.15 >= cX && mY <= cY-0.1 && mY+0.3 >= cY) {
-        for (i = 0; i < 4; i++) vertices[offset+i] = vec2(0,0);
-        addScore();
+        if (mX <= cX + 0.05 && mX + 0.15 >= cX && mY <= cY - 0.1 && mY + 0.3 >= cY) {
+            for (i = 0; i < 4; i++) vertices[offset + i] = vec2(0, 0);
+            addScore();
         }
     }
 }
 
 /**
- *  Bætir við stigum efst á skjánum
+ *  Bætir við stigum efst á skjánum.
  */
 function addScore() {
-    const offset = 12 + 4*(score);
-    vertices[offset] = vec2(-0.9+0.07*score, 0.9);
-    vertices[offset+1] = vec2(-0.9+0.07*score, 0.8);
-    vertices[offset+2] = vec2(-0.85+0.07*score, 0.8);
-    vertices[offset+3] = vec2(-0.85+0.07*score, 0.9);
-    score++;
-}
-
-/**
- * Fall sem býr til skrímsli og lætur það hreyfast.
- */
-function moveMonster() {
-    if(monsterTimer <= 0) {
-        monsterTimer = Math.random() + 1000;
-        vertices[12] = vec2(0.8, -0.8);
-        vertices[13] = vec2(1, -0.8);
-        vertices[14] = vec2(1,-1);
-        vertices[15] = vec2(0.8,-1);
-    }
-    else {
-        for(i = 12; i < 16; i++) vertices[i][0] -= 0.01;
-        if(vertices[13][0] <= -1) for(i = 12; i < 16; i++) vertices[i] = 0;
-    }
-    monsterTimer--;
+    const offset = 12 + 4 * (score);
+    vertices[offset] = vec2(-0.9 + 0.07 * score, 0.9);
+    vertices[offset + 1] = vec2(-0.9 + 0.07 * score, 0.8);
+    vertices[offset + 2] = vec2(-0.85 + 0.07 * score, 0.8);
+    vertices[offset + 3] = vec2(-0.85 + 0.07 * score, 0.9);
+    if (score < 10) score++;
 }
 
 window.onload = function init() {
     canvas = document.getElementById("gl-canvas");
-
+    sigur = document.getElementById("sigur");
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) { alert("WebGL isn't available"); }
 
@@ -89,16 +80,11 @@ window.onload = function init() {
     var program = initShaders(gl, "vertex-shader", "fragment-shader");
     gl.useProgram(program);
 
-    vertices = [
-        vec2(-0.8, -1),
-        vec2(-0.8, -0.9),
-        vec2(-0.65, -0.9),
-        vec2(-0.8, -0.7)
-        
-    ];
+    sigur.style.visibility = 'hidden';
+    makeMarius();
     coin(1);
     coin(2);
-    for (i = 12; i < 53; i++) vertices[i] = vec2(0,0);
+    for (i = 12; i < 60; i++) vertices[i] = vec2(0, 0);
     xmove = 0;
     ymove = 0;
     // Load the data into the GPU
@@ -118,6 +104,10 @@ window.onload = function init() {
         switch (e.keyCode) {
             case 37:	// vinstri �r
                 if (jump) break;
+                if(score>=10) {
+                    xmove = 0.0;
+                    break;
+                }
                 if (right) {
                     right = false;
                     vertices[2][0] -= 0.3;
@@ -125,14 +115,18 @@ window.onload = function init() {
                 }
                 else if (vertices[0][0] <= -0.95) {
                     for (i = 0; i < 4; i++) {
-                     if(i == 2) vertices[i][0] = 0.85;
-                     else vertices[i][0] = 1;
+                        if (i == 2) vertices[i][0] = 0.85;
+                        else vertices[i][0] = 1;
                     }
                 }
                 else xmove = -0.04;
                 break;
             case 39:	// h�gri �r
                 if (jump) break;
+                if(score>=10) {
+                    xmove = 0.0;
+                    break;
+                }
                 if (!right) {
                     right = true;
                     vertices[2][0] += 0.3;
@@ -140,14 +134,14 @@ window.onload = function init() {
                 }
                 else if (vertices[0][0] >= 0.95) {
                     for (i = 0; i < 4; i++) {
-                        if(i == 2) vertices[i][0] = -0.85;
+                        if (i == 2) vertices[i][0] = -0.85;
                         else vertices[i][0] = -1;
                     }
                 }
                 else xmove = 0.04;
                 break;
             case 32:
-                if (jump) break;
+                if (jump || score >= 10) break;
                 jump = height;
                 if (right && xmove != 0) xmove = 0.01;
                 else if (xmove != 0) xmove = -0.01;
@@ -166,48 +160,46 @@ window.onload = function init() {
     render();
 }
 
-
 function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
-    if (jump > 0) {
-        if (jump > height/2) ymove = 0.1;
-        else ymove = -0.1;
-        if(xmove!=0 && jump%2==1) {
-            if(right) xmove = 0.05;
-            else xmove = -0.05;
+    if (score < 10) {
+        if (jump > 0) {
+            if (jump > height / 2) ymove = 0.1;
+            else ymove = -0.1;
+            if (xmove != 0 && jump % 2 == 1) {
+                if (right) xmove = 0.05;
+                else xmove = -0.05;
+            }
+            else if (xmove != 0) xmove = 0.01;
+            for (i = 0; i < 4; i++) {
+                vertices[i][1] += ymove;
+                vertices[i][0] += xmove;
+            }
+            jump--;
         }
-        else if(xmove!=0) xmove = 0.01;
-        for (i = 0; i < 4; i++) {
-            vertices[i][1] += ymove;
-            vertices[i][0] += xmove;
+        for (i = 0; i < 2; i++) {
+            if (nextCoin[i] <= 0) coin(i + 1);
+            else nextCoin[i]--;
         }
-        jump--;
+        collision(4);
+        collision(8);
     }
-    for(i = 0; i < 2; i++) {
-    if(nextCoin[i] <= 0) coin(i+1);
-    else nextCoin[i]--;
-    }
-    collision(4);
-    collision(8);
-    
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(vertices));
 
     // Teikna buxurnar á Marius
-    gl.uniform4fv(colorLoc, vec4( 0.0, 0.0, 1.0, 1.0 ));
+    gl.uniform4fv(colorLoc, vec4(0.0, 0.0, 1.0, 1.0));
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     // Teikna búkinn á Marius (so no head?)
-    gl.uniform4fv(colorLoc, vec4( 1.0, 0.0, 0.0, 1.0 ));
+    gl.uniform4fv(colorLoc, vec4(1.0, 0.0, 0.0, 1.0));
     gl.drawArrays(gl.TRIANGLES, 1, 3);
 
     // Teikna gullmolana
-    gl.uniform4fv(colorLoc, vec4( 1.0, 1.0, 0.0, 1.0 ));
+    gl.uniform4fv(colorLoc, vec4(1.0, 1.0, 0.0, 1.0));
     gl.drawArrays(gl.TRIANGLE_FAN, 4, 4);
     gl.drawArrays(gl.TRIANGLE_FAN, 8, 4);
-    if(score>0 && score<=10) {
-        gl.uniform4fv(colorLoc, vec4( 0.0, 1.0, 0.0, 1.0 ));
-        for(i = 0; i<score; i++) gl.drawArrays(gl.TRIANGLE_FAN, 12+4*i, 4);
-    }
-
+    gl.uniform4fv(colorLoc, vec4(0.0, 1.0, 0.0, 1.0));
+    for (i = 12; i < 52; i += 4) gl.drawArrays(gl.TRIANGLE_FAN, i, 4);
+    if (score >= 10) sigur.style.visibility = 'visible';
     window.requestAnimFrame(render);
 }
