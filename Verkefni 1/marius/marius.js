@@ -1,7 +1,7 @@
 var canvas;
 var gl;
 var vertices;
-let right = true, score = 0, jump = 0, height = 20, nextCoin = [], scores = [], monsterTimer = 0;
+let right = true, score = 0, jump = 0, height = 20, nextCoin = [], scores = [];
 let xmove, ymove, colorLoc;
 
 /**
